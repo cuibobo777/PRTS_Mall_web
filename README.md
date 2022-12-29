@@ -6,6 +6,8 @@
 ### 项目预览
 
    UI 部分使用的是 Vant2 所以呈现的是移动端的效果
+   
+   ![image](https://github.com/cuibobo777/PRTS_Mall_web/tree/main/img-folder/cart_view.png)
   
 ### 启动项目
 要启动该项目的话请进行一下步骤
