@@ -1,24 +1,20 @@
-# my_mall
+# PRTS_mall
 
-## Project setup
+## Vue2 + vue-router + vux 实现PRTS项目的前端部分
+
+  后端部分指路https://github.com/cuibobo777/prts_mall
+### 项目预览
+
+   UI 部分使用的是 Vant2 所以呈现的是移动端的效果
+  
+### 启动项目
+要启动该项目的话请进行一下步骤
 ```
 npm install
-```
-
-### Compiles and hot-reloads for development
-```
+npm run build
 npm run serve
 ```
-
-### Compiles and minifies for production
+因为使用Vue2，所以在执行npm install时可能有部分资源安装失败，可执行下面的命令
 ```
-npm run build
+npm install -legacy-peer-deps
 ```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
