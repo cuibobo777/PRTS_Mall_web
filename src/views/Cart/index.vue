@@ -3,7 +3,7 @@
     <van-nav-bar title="购物车" />  <!-- left-arrow @click-left="onClickLeft" -->
     <div class="goods-cards">
       <van-checkbox-group ref="checkboxGroup" v-model="result" :style="show">
-        <van-checkbox label-disabled v-for="(info, index) in userCart" :key="index" :name="info.goods_id_id" @click="totalPrice">
+        <van-checkbox label-disabled v-for="(info, index) in userCart" :key="index" :name="info.goods_id_id">
           <van-swipe-cell>
             <van-card
               class="goods-card"
@@ -51,28 +51,36 @@
       menuBar
     },
     methods: {
-    ...mapMutations(['SET_USER_CART']),
-    async getCartInfo(id) {
-      // console.log(id)
-      const url = `cart/get_cart/?id=${id}`
-      this.$api.goodsToCart.getCart(url).then((
-      { data }) => {
-        // console.log(data)
-        this.SET_USER_CART(data)
-      }
-      )
-    },
-    async deleteCartItem(data) {
-      data.goods_counts = 0
-      this.$api.goodsToCart.updateCart(data).then((
-      { message }) => {
-        this.$router.go(0)
-      }
-      )
-    },
-    async updateCartItem(data, count) {
-      if (count === -1) {
-        if (data.goods_count >= 2) {
+      ...mapMutations(['SET_USER_CART']),
+      async getCartInfo(id) {
+        // console.log(id)
+        const url = `cart/get_cart/?id=${id}`
+        this.$api.goodsToCart.getCart(url).then((
+        { data }) => {
+          // console.log(data)
+          this.SET_USER_CART(data)
+        })
+      },
+      async deleteCartItem(data) {
+        data.goods_counts = 0
+        this.$api.goodsToCart.updateCart(data).then((
+        { message }) => {
+          this.$router.go(0)
+        }
+        )
+      },
+      async updateCartItem(data, count) {
+        if (count === -1) {
+          if (data.goods_count >= 2) {
+            data.goods_counts = parseInt(data.goods_count) + count
+            this.$api.goodsToCart.updateCart(data).then((
+            { message }) => {
+              // this.$router.go(0)
+              this.getCartInfo(this.userId)
+            }
+            )
+          }
+        } else {
           data.goods_counts = parseInt(data.goods_count) + count
           this.$api.goodsToCart.updateCart(data).then((
           { message }) => {
@@ -81,50 +89,54 @@
           }
           )
         }
-      } else {
-        data.goods_counts = parseInt(data.goods_count) + count
-        this.$api.goodsToCart.updateCart(data).then((
-        { message }) => {
-          // this.$router.go(0)
-          this.getCartInfo(this.userId)
+        let totalPrice = 0
+        if (this.result) {
+          setTimeout(() => {
+            this.result.forEach((id) => {
+              const goods = this.userCart.find((item) => item.goods_id_id === id)
+              const goodsPrice = parseFloat(goods.selling_price) * parseInt(goods.goods_count) * 100
+              totalPrice += goodsPrice
+            })
+            this.price = totalPrice
+          }, 50)
         }
-        )
+      },
+      setShow() {
+          if (this.userCart) {
+            this.showTip = "display: none"
+            this.show = ""
+        }
+      },
+      async checkAll() {
+        if (this.clickFlag === 1) {
+          this.$refs.checkboxGroup.toggleAll(true)
+          this.totalPrice()
+          this.clickFlag = 2
+        } else if (this.clickFlag === 2) {
+          this.$refs.checkboxGroup.toggleAll()
+          this.clickFlag = 1
+          this.totalPrice()
+        }
+      },
+      onSubmit() {
+        this.$router.push({ name: 'Order', params: { goodsIdList: this.result, price: this.price } })
       }
-    },
-    setShow() {
-        if (this.userCart) {
-          this.showTip = "display: none"
-          this.show = ""
-      }
-    },
-    totalPrice() {
-      let totalPrice = 0
-      if (this.result) {
-        this.result.forEach((id) => {
-          const goods = this.userCart.find((item) => item.goods_id_id === id)
-          const goodsPrice = parseFloat(goods.selling_price) * parseInt(goods.goods_count) * 100
-          totalPrice += goodsPrice
-        })
-      }
-      this.price = totalPrice
-    },
-    checkAll() {
-      if (this.clickFlag === 1) {
-        this.$refs.checkboxGroup.toggleAll(true)
-        this.totalPrice()
-        this.clickFlag = 2
-      } else if (this.clickFlag === 2) {
-        this.$refs.checkboxGroup.toggleAll()
-        this.clickFlag = 1
-        this.totalPrice()
-      }
-    },
-    onSubmit() {
-      this.$router.push({ name: 'Order', params: { goodsIdList: this.result, price: this.price } })
-    }
-    },
+      },
     computed: {
       ...mapState(['userCart', 'userId'])
+    },
+    watch: {
+      result(newresult) {
+        let totalPrice = 0
+        if (newresult) {
+          newresult.forEach((id) => {
+            const goods = this.userCart.find((item) => item.goods_id_id === id)
+            const goodsPrice = parseFloat(goods.selling_price) * parseInt(goods.goods_count) * 100
+            totalPrice += goodsPrice
+          })
+        }
+        this.price = totalPrice
+      }
     },
     created() {
       this.getCartInfo(this.userId)
