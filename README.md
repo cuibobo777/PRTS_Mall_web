@@ -1,6 +1,6 @@
 # PRTS_mall
 
-## Vue2 + vue-router + vux 实现PRTS项目的前端部分
+## Vue2 + vue-router + vuex 实现PRTS项目的前端部分
 
   后端部分指路https://github.com/cuibobo777/prts_mall
 ### 项目预览
