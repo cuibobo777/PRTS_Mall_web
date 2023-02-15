@@ -11,7 +11,7 @@ axios.defaults.headers['Content-Type'] = 'application/json '
 
 axios.interceptors.request.use(
   config => {
-  console.log()
+  // console.log()
   if (localStorage.getItem('userToken')) {
     config.headers.authorization = JSON.parse(localStorage.getItem('userToken'))
   }
